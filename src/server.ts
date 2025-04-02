@@ -1,13 +1,18 @@
 import express from 'express';
-import { userRoutes } from './routes/userRoutes'
+import dotenv from 'dotenv';
+import { AppDataSource } from './config/data-source';
+import patientRoutes from './routes/routes';
+
+dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
-
 app.use(express.json());
 
-app.use('/users', userRoutes);
+app.use('/api', patientRoutes);
 
-app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
-});
+const PORT = process.env.PORT || 3000;
+
+AppDataSource.initialize().then(() => {
+    console.log('📦 Banco de dados conectado!');
+    app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
+}).catch(error => console.error('Erro ao conectar no banco de dados', error));
